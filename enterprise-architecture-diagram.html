@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise System Architecture Workflow</title>
+    <!-- Tailwind CSS for premium UI styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the interactive cursor and loading state */
+        .cursor-grab { cursor: grab; }
+        .cursor-grabbing { cursor: grabbing !important; }
+        
+        /* Ensure the mermaid container doesn't force a page scroll */
+        #diagram-container svg {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: none !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 h-screen w-screen flex flex-col overflow-hidden font-sans text-slate-800">
+
+    <!-- Header UI -->
+    <header class="bg-white shadow-sm border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-center z-10 shrink-0 gap-4">
+        <div>
+            <h1 class="text-xl font-bold text-slate-900">Global Omni-Channel Architecture</h1>
+            <p class="text-sm text-slate-500">Event-Driven Microservices, ML Pipelines & CI/CD Topology</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="bg-slate-100 rounded-lg p-1 flex gap-1 border border-slate-200">
+                <button id="zoom-out" class="p-2 hover:bg-white hover:shadow-sm rounded text-slate-700 transition" title="Zoom Out">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg>
+                </button>
+                <button id="zoom-in" class="p-2 hover:bg-white hover:shadow-sm rounded text-slate-700 transition" title="Zoom In">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+                </button>
+            </div>
+            <button id="reset-zoom" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition">
+                Reset View
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Canvas Area -->
+    <main class="flex-1 w-full relative bg-slate-50 overflow-hidden" id="main-area">
+        <div id="loading" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-20">
+            <svg class="animate-spin h-10 w-10 text-blue-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-slate-600 font-medium">Compiling complex architectural node graph...</p>
+            <p class="text-xs text-slate-400 mt-2">This utilizes advanced Mermaid rendering limits.</p>
+        </div>
+        
+        <!-- Container for Mermaid SVG -->
+        <div id="diagram-container" class="w-full h-full cursor-grab"></div>
+    </main>
+
+    <!-- External Libraries -->
+    <!-- svg-pan-zoom for interactive diagram exploration -->
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    
+    <!-- Application Logic -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+        // 1. Initialize Mermaid with specific rendering parameters for large graphs
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
+                primaryTextColor: '#1e293b',
+                lineColor: '#94a3b8',
+                clusterBkg: '#ffffff',
+                clusterBorder: '#e2e8f0'
+            },
+            flowchart: {
+                curve: 'basis', // Smooth, flowing lines for complex routing
+                nodeSpacing: 45,
+                rankSpacing: 60,
+                padding: 20,
+                useMaxWidth: false // Crucial for zoom-pan logic
+            },
+            securityLevel: 'loose'
+        });
+
+        // 2. The Super-Complex Mermaid Definition
+        const complexArchitectureDiagram = `
+flowchart TD
+    %% --------------------------------------------------------
+    %% ADVANCED CUSTOM STYLING DEFINITIONS
+    %% --------------------------------------------------------
+    classDef default fill:#ffffff,stroke:#cbd5e1,stroke-width:1px,color:#334155,font-family:Inter;
+    classDef user fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e40af,rx:10,ry:10;
+    classDef edge fill:#fff7ed,stroke:#f97316,stroke-width:2px,color:#9a3412,shape:hexagon;
+    classDef security fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#991b1b,shape:diamond;
+    classDef auth fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#166534;
+    classDef service fill:#f0f9ff,stroke:#0ea5e9,stroke-width:2px,color:#075985,rx:5,ry:5;
+    classDef db fill:#fdf4ff,stroke:#d946ef,stroke-width:2px,color:#86198f,shape:cylinder;
+    classDef cache fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#9a3412,shape:cylinder;
+    classDef queue fill:#f8fafc,stroke:#64748b,stroke-width:3px,color:#334155,stroke-dasharray: 4 4;
+    classDef ai fill:#f5f3ff,stroke:#8b5cf6,stroke-width:2px,color:#5b21b6;
+    classDef external fill:#fafafa,stroke:#a1a1aa,stroke-width:2px,color:#3f3f46,rx:15,ry:15;
+    classDef devops fill:#ecfeff,stroke:#06b6d4,stroke-width:2px,color:#155e75;
+    classDef monitor fill:#fffbeb,stroke:#f59e0b,stroke-width:2px,color:#b45309;
+
+    %% --------------------------------------------------------
+    %% TIER 1: EXTERNAL USERS & CLIENTS
+    %% --------------------------------------------------------
+    subgraph Clients ["🌐 Tier 1: Global Clients & Devices"]
+        direction LR
+        U1([iOS / Android App]):::user
+        U2([Web SPA / React]):::user
+        U3([B2B Vendor Portal]):::user
+        U4([Fulfillment IoT Sensors]):::user
+    end
+
+    %% --------------------------------------------------------
+    %% TIER 2: EDGE & SECURITY
+    %% --------------------------------------------------------
+    subgraph EdgeLayer ["🛡️ Tier 2: Edge Network & Global Routing"]
+        direction TB
+        C_CDN{{Cloudflare Global CDN}}:::edge
+        C_DDOS{DDoS Mitigation}:::security
+        C_WAF{Web Application Firewall}:::security
+        C_BOT[[Bot Management AI]]:::ai
+        API_GW{{Kong API Gateway}}:::edge
+        
+        C_CDN --> C_DDOS
+        C_DDOS --> C_WAF
+        C_WAF -.-> |Traffic Inspection| C_BOT
+        C_BOT -- Clean Traffic --> API_GW
+    end
+
+    %% Connections T1 -> T2
+    U1 & U2 & U3 ==> |HTTPS / TLS 1.3| C_CDN
+    U4 -.-> |MQTT Streams| API_GW
+
+    %% --------------------------------------------------------
+    %% TIER 3: IDENTITY & ACCESS (IAM)
+    %% --------------------------------------------------------
+    subgraph IAM ["🔐 Identity & Access Management"]
+        direction LR
+        Auth_OIDC[OAuth2 / OIDC Provider]:::auth
+        Auth_Cache[(Redis Session Token Cache)]:::cache
+        Auth_DB[(PostgreSQL Roles DB)]:::db
+        
+        Auth_OIDC <--> Auth_Cache
+        Auth_OIDC <--> Auth_DB
+    end
+
+    API_GW <--> |Validate JWT Bearer| Auth_OIDC
+
+    %% --------------------------------------------------------
+    %% TIER 4: CENTRAL EVENT MESH (KAFKA)
+    %% --------------------------------------------------------
+    subgraph EventMesh ["⚡ Central Event Mesh (Apache Kafka Cluster)"]
+        direction LR
+        K_Nav[(User Navigation Streams)]:::queue
+        K_Order[(Order Lifecycle Topic)]:::queue
+        K_Pay[(Payment Events Topic)]:::queue
+        K_Logistics[(Fulfillment & Logistics Topic)]:::queue
+        K_Inv[(Inventory Delta Streams)]:::queue
+    end
+
+    %% --------------------------------------------------------
+    %% TIER 5: CORE MICROSERVICES (K8S CLUSTER)
+    %% --------------------------------------------------------
+    subgraph Kubernetes ["⚙️ Tier 3: Kubernetes Production Cluster (Microservices)"]
+        direction TB
+
+        %% Domain: BFF
+        subgraph Domain_BFF ["Backend-For-Frontend (BFF)"]
+            direction LR
+            BFF_Mobile[Mobile BFF Aggregator]:::service
+            BFF_Web[Web BFF Aggregator]:::service
+            GQL[GraphQL Federation Layer]:::service
+            BFF_Mobile & BFF_Web --> GQL
+        end
+
+        %% Domain: Order & Cart
+        subgraph Domain_Order ["Order Management System (OMS)"]
+            direction TB
+            Svc_Cart[Cart & Session Service]:::service
+            Svc_Promo[Pricing & Promotions]:::service
+            Svc_Order[Order Orchestration Engine]:::service
+            DB_Order[(CockroachDB: Orders)]:::db
+            Cache_Cart[(Redis: Cart State)]:::cache
+            
+            Svc_Cart <--> Cache_Cart
+            Svc_Cart --> Svc_Promo
+            Svc_Cart --> Svc_Order
+            Svc_Order <--> Svc_Promo
+            Svc_Order --> DB_Order
+        end
+
+        %% Domain: Catalog & Sourcing
+        subgraph Domain_Catalog ["Catalog & Inventory Engine"]
+            direction TB
+            Svc_Catalog[Product Catalog API]:::service
+            DB_Search[(Elasticsearch: Products)]:::db
+            Svc_Inventory[Distributed Stock Sourcing]:::service
+            DB_Catalog[(MongoDB: Master Catalog)]:::db
+            
+            Svc_Catalog <--> DB_Search
+            Svc_Catalog --> DB_Catalog
+        end
+
+        %% Domain: Payments
+        subgraph Domain_Finance ["Payment & Ledger Domain"]
+            direction TB
+            Svc_Payment[Payment Router Service]:::service
+            ML_Fraud[[Anti-Fraud ML Classifier]]:::ai
+            Svc_Ledger[Accounting Ledger API]:::service
+            DB_Ledger[(PostgreSQL: Finance)]:::db
+            
+            Svc_Payment <--> |Risk Score| ML_Fraud
+            Svc_Payment --> Svc_Ledger
+            Svc_Ledger --> DB_Ledger
+        end
+
+        %% Domain: Logistics
+        subgraph Domain_Logistics ["Logistics & Fulfillment Domain"]
+            direction TB
+            Svc_Warehouse[Warehouse Routing Logic]:::service
+            ML_Carrier[[Dynamic Carrier Bidding AI]]:::ai
+            Svc_Dispatch[Dispatch & Tracking Controller]:::service
+            
+            Svc_Warehouse --> ML_Carrier
+            ML_Carrier --> Svc_Dispatch
+        end
+
+        %% Cross-Domain & Event Mesh Wiring
+        GQL --> Svc_Cart
+        GQL --> Svc_Catalog
+        Svc_Order -.-> |Reserve Inventory RPC| Svc_Inventory
+        Svc_Order -.-> |Authorize Payment RPC| Svc_Payment
+        
+        %% Publish to Queues
+        Svc_Order ===> |Publish Order Created| K_Order
+        Svc_Inventory ===> |Publish Stock Delta| K_Inv
+        Svc_Payment ===> |Publish Payment Settled| K_Pay
+        Svc_Dispatch ===> |Publish Tracking Status| K_Logistics
+        GQL ===> |Publish Clickstream| K_Nav
+
+        %% Consume from Queues
+        K_Order -.-> |Consume| Svc_Warehouse
+        K_Pay -.-> |Consume| Svc_Order
+    end
+
+    %% Gateway to K8s routing
+    API_GW --> BFF_Mobile
+    API_GW --> BFF_Web
+    API_GW --> |Admin Route| Svc_Catalog
+
+    %% --------------------------------------------------------
+    %% TIER 6: EXTERNAL INTEGRATIONS
+    %% --------------------------------------------------------
+    subgraph ThirdParty ["🔌 Tier 4: Third-Party Ecosystem"]
+        direction TB
+        Ext_Payment[Stripe / Adyen / PayPal]:::external
+        Ext_Shipping[FedEx / DHL / UPS APIs]:::external
+        Ext_Comms[Twilio SendGrid / SMS]:::external
+        Ext_ERP[SAP S/4HANA ERP]:::external
+    end
+
+    Svc_Payment <--> |Secure Mutal TLS| Ext_Payment
+    ML_Carrier <--> |Real-time Rate Fetch| Ext_Shipping
+    Svc_Dispatch --> |Generate Waybill| Ext_Shipping
+    Svc_Order --> |Trigger Notifications| Ext_Comms
+    Svc_Ledger -.-> |Nightly Batch Sync| Ext_ERP
+
+    %% --------------------------------------------------------
+    %% TIER 7: DATA & MACHINE LEARNING PIPELINE
+    %% --------------------------------------------------------
+    subgraph DataPlatform ["📊 Tier 5: Data Lake & Intelligence Platform"]
+        direction TB
+        DP_Stream[Apache Flink Streaming Jobs]:::service
+        DP_Warehouse[(Snowflake Data Cloud)]:::db
+        DP_BI[Looker Enterprise Dashboards]:::monitor
+        DP_ML_Demand[[Vertex AI: Demand Forecasting]]:::ai
+        DP_ML_Recs[[Vertex AI: Personalization Engine]]:::ai
+
+        %% Ingestion
+        K_Nav & K_Order & K_Pay & K_Logistics & K_Inv ===> |Real-time Ingest| DP_Stream
+        DP_Stream --> |ETL Pipeline| DP_Warehouse
+        
+        %% Analytics
+        DP_Warehouse --> DP_BI
+        DP_Warehouse --> DP_ML_Demand
+        DP_Warehouse --> DP_ML_Recs
+        
+        %% Feedback Loops
+        DP_ML_Recs -.-> |Update Recommendations| DB_Search
+        DP_ML_Demand -.-> |Update Reorder Points| Svc_Inventory
+    end
+
+    %% --------------------------------------------------------
+    %% TIER 8: PLATFORM ENGINEERING (DEVOPS/SRE)
+    %% --------------------------------------------------------
+    subgraph SRE ["🚨 DevOps, CI/CD & Telemetry"]
+        direction LR
+        Dev_Repo[GitHub Actions CI/CD]:::devops
+        Dev_IaC[Terraform Infrastructure]:::devops
+        Ops_Metrics[Prometheus + Grafana]:::monitor
+        Ops_Logs[(Elastic Stack: ELK)]:::monitor
+        Ops_Alert{PagerDuty}:::security
+
+        Dev_Repo --> |Deploy Container Images| Kubernetes
+        Dev_IaC --> |Provision Infrastructure| Kubernetes
+        
+        Kubernetes -.-> |Scrape Metrics| Ops_Metrics
+        Kubernetes -.-> |Stream Logs| Ops_Logs
+        
+        Ops_Metrics --> |Threshold Breached| Ops_Alert
+        Ops_Logs --> |Error Spike Detected| Ops_Alert
+        Ops_Alert --> |Page On-Call Engineer| Ext_Comms
+    end
+`;
+
+        // 3. Render Logic
+        async function buildAndRenderDiagram() {
+            try {
+                const container = document.getElementById('diagram-container');
+                const loading = document.getElementById('loading');
+
+                // Render the mermaid syntax into SVG
+                const { svg } = await mermaid.render('architecture-svg', complexArchitectureDiagram);
+                
+                // Inject SVG into DOM
+                container.innerHTML = svg;
+                loading.style.display = 'none';
+
+                // Grab the newly created SVG element
+                const svgElement = document.getElementById('architecture-svg');
+                
+                // Initialize SVG Pan/Zoom engine
+                const panZoomInstance = svgPanZoom(svgElement, {
+                    zoomEnabled: true,
+                    controlIconsEnabled: false,
+                    fit: true,
+                    center: true,
+                    minZoom: 0.1,
+                    maxZoom: 10,
+                    zoomScaleSensitivity: 0.2,
+                    dblClickZoomEnabled: true
+                });
+
+                // Setup custom cursor dragging interaction
+                let isDragging = false;
+                svgElement.addEventListener('mousedown', () => {
+                    isDragging = true;
+                    container.classList.add('cursor-grabbing');
+                });
+                window.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        container.classList.remove('cursor-grabbing');
+                    }
+                });
+
+                // Wire up UI buttons
+                document.getElementById('zoom-in').addEventListener('click', () => {
+                    panZoomInstance.zoomIn();
+                });
+                
+                document.getElementById('zoom-out').addEventListener('click', () => {
+                    panZoomInstance.zoomOut();
+                });
+                
+                document.getElementById('reset-zoom').addEventListener('click', () => {
+                    panZoomInstance.resetZoom();
+                    panZoomInstance.center();
+                });
+
+                // Handle window resize to keep diagram centered
+                window.addEventListener('resize', () => {
+                    panZoomInstance.resize();
+                    panZoomInstance.fit();
+                    panZoomInstance.center();
+                });
+
+            } catch (error) {
+                console.error("Mermaid parsing failed:", error);
+                document.getElementById('loading').innerHTML = `
+                    <div class="text-red-500 font-bold mb-2">Error rendering diagram</div>
+                    <div class="text-sm text-slate-600 max-w-md text-center">${error.message}</div>
+                `;
+            }
+        }
+
+        // Wait a tiny fraction of a second to ensure fonts load before calculating layout bounds
+        setTimeout(buildAndRenderDiagram, 300);
+
+    </script>
+</body>
+</html>
