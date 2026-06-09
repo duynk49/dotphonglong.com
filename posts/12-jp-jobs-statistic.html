@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo: Nhu Cầu Tuyển Dụng Lập Trình Viên Tại Nhật Bản</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <nav class="sticky top-0 z-50 bg-indigo-900 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <span>🇯🇵</span> JP-Tech Insights 2026
+                </div>
+                <div class="hidden md:block text-sm font-medium text-indigo-200">
+                    Cập nhật mới nhất: Quý 2 / 2026
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <header class="text-center mb-16">
+            <h1
+                class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-cyan-500 mb-4">
+                Toàn Cảnh Nhu Cầu Tuyển Dụng Lập Trình Viên Tại Nhật Bản
+            </h1>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto">
+                Thị trường công nghệ thông tin Nhật Bản đang bước vào kỷ nguyên "Khát nhân lực" tột độ. Đẩy mạnh Chuyển
+                đổi số (DX) kết hợp với tình trạng già hóa dân số đã mở ra cơ hội vàng cho các kỹ sư phần mềm nước
+                ngoài, đặc biệt là từ Việt Nam.
+            </p>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            <div
+                class="glass-card rounded-2xl shadow-xl p-8 border-t-4 border-t-rose-500 flex flex-col items-center text-center transform transition hover:-translate-y-1">
+                <div class="text-4xl mb-3">🚨</div>
+                <h3 class="text-slate-500 font-semibold text-sm uppercase tracking-wider mb-2">Dự báo thiếu hụt IT
+                    (2026)</h3>
+                <p class="text-5xl font-extrabold text-rose-600">540.000</p>
+                <p class="text-sm text-slate-500 mt-2">Kỹ sư trên toàn quốc</p>
+            </div>
+            <div
+                class="glass-card rounded-2xl shadow-xl p-8 border-t-4 border-t-emerald-500 flex flex-col items-center text-center transform transition hover:-translate-y-1">
+                <div class="text-4xl mb-3">💴</div>
+                <h3 class="text-slate-500 font-semibold text-sm uppercase tracking-wider mb-2">Mức lương trung bình</h3>
+                <p class="text-5xl font-extrabold text-emerald-600">6.5M</p>
+                <p class="text-sm text-slate-500 mt-2">JPY / Năm (Tăng 12% so với 2024)</p>
+            </div>
+            <div
+                class="glass-card rounded-2xl shadow-xl p-8 border-t-4 border-t-cyan-500 flex flex-col items-center text-center transform transition hover:-translate-y-1">
+                <div class="text-4xl mb-3">🌍</div>
+                <h3 class="text-slate-500 font-semibold text-sm uppercase tracking-wider mb-2">Tỷ lệ tuyển ngoại quốc
+                </h3>
+                <p class="text-5xl font-extrabold text-cyan-600">+35%</p>
+                <p class="text-sm text-slate-500 mt-2">Tăng trưởng so với cùng kỳ</p>
+            </div>
+        </section>
+
+        <section class="mb-16 glass-card rounded-3xl shadow-xl p-6 md:p-10">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <span>📈</span> Lộ Trình Khát Nhân Lực IT (2020 - 2030)
+                </h2>
+                <p class="text-slate-600 leading-relaxed">
+                    Biểu đồ thể hiện mức độ gia tăng nghiêm trọng của việc thiếu hụt nhân sự IT do sự bùng nổ của AI và
+                    Cloud, vượt xa tốc độ đào tạo kỹ sư trong nước của Nhật Bản. Số liệu được tổng hợp và dự báo dựa
+                    trên các báo cáo của METI (Bộ Kinh tế, Thương mại và Công nghiệp Nhật Bản).
+                </p>
+            </div>
+            <div class="chart-container">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
+
+            <section class="glass-card rounded-3xl shadow-xl p-6 md:p-10">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-3 flex items-center gap-2">
+                        <span>💻</span> Ngôn Ngữ Lập Trình Thống Trị
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed text-sm">
+                        Python vươn lên dẫn đầu nhờ làn sóng AI/Data. Java vẫn giữ vị trí vững chắc trong hệ thống ngân
+                        hàng/doanh nghiệp truyền thống, trong khi TypeScript và Go đang tăng trưởng mạnh ở các startup
+                        và mảng web hiện đại.
+                    </p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="languageChart"></canvas>
+                </div>
+            </section>
+
+            <section class="glass-card rounded-3xl shadow-xl p-6 md:p-10">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-3 flex items-center gap-2">
+                        <span>🎯</span> Các Vị Trí Được Săn Đón Nhất
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed text-sm">
+                        Tỷ trọng nhu cầu tuyển dụng phân bổ theo vai trò. Kỹ sư AI và Dữ liệu chiếm tỷ trọng lớn nhất,
+                        theo sát là các kỹ sư Fullstack có khả năng làm chủ toàn bộ vòng đời phát triển phần mềm.
+                    </p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="rolesChart"></canvas>
+                </div>
+            </section>
+
+        </div>
+
+        <section class="mb-16 glass-card rounded-3xl shadow-xl p-6 md:p-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                <div class="order-2 lg:order-1 chart-container">
+                    <canvas id="industryChart"></canvas>
+                </div>
+                <div class="order-1 lg:order-2">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span>🏢</span> Nhu Cầu Theo Ngành Công Nghiệp
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        Không chỉ các công ty IT thuần túy, các tập đoàn truyền thống tại Nhật đang ráo riết săn lùng
+                        lập trình viên để phục vụ quá trình chuyển đổi số. Biểu đồ Radar thể hiện chỉ số nhu cầu tuyển
+                        dụng (thang điểm 100) của các nhóm ngành.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
+                                1</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Fintech & Ngân Hàng</h4>
+                                <p class="text-sm text-slate-600">Hiện đại hóa hệ thống thanh toán không tiền mặt và
+                                    tích hợp Blockchain/AI vào tài chính.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="flex-shrink-0 w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-600 font-bold">
+                                2</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Sản xuất & IoT</h4>
+                                <p class="text-sm text-slate-600">Nhật Bản là công xưởng công nghệ cao. Tự động hóa nhà
+                                    máy và xe tự lái (Automotive) đang khát kỹ sư C++ và Nhúng.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold">
+                                3</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">Thương Mại Điện Tử & Dịch Vụ Web</h4>
+                                <p class="text-sm text-slate-600">Phát triển ứng dụng B2C, nền tảng SaaS đòi hỏi lượng
+                                    lớn kỹ sư React, Nodejs, Go.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card rounded-3xl shadow-xl p-6 md:p-10 mb-10 border-t-8 border-indigo-600">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-slate-800 mb-3 flex items-center justify-center gap-2">
+                    <span>🛡️</span> Phân Tích SWOT Cho Dev Việt Tại Nhật
+                </h2>
+                <p class="text-slate-600">Đánh giá cơ hội và thách thức khi tham gia thị trường IT Nhật Bản hiện nay.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><span>💪</span> Điểm Mạnh
+                        (Strengths)</h3>
+                    <ul class="list-disc list-inside text-slate-700 space-y-2">
+                        <li>Khả năng thích nghi và học hỏi công nghệ mới nhanh.</li>
+                        <li>Sự tương đồng nhất định về văn hóa Á Đông.</li>
+                        <li>Cộng đồng kỹ sư Việt Nam tại Nhật rất lớn mạnh, hỗ trợ tốt.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-amber-50 rounded-2xl p-6 border border-amber-100">
+                    <h3 class="text-xl font-bold text-amber-800 mb-4 flex items-center gap-2"><span>⚠️</span> Điểm Yếu
+                        (Weaknesses)</h3>
+                    <ul class="list-disc list-inside text-slate-700 space-y-2">
+                        <li>Rào cản ngôn ngữ (tiếng Nhật IT - chữ Hán phức tạp).</li>
+                        <li>Đôi khi thiếu kỹ năng giao tiếp và làm việc nhóm chuẩn Nhật (Ho-Ren-So).</li>
+                        <li>Kinh nghiệm thiết kế hệ thống lớn (Architecture) còn hạn chế.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-emerald-50 rounded-2xl p-6 border border-emerald-100">
+                    <h3 class="text-xl font-bold text-emerald-800 mb-4 flex items-center gap-2"><span>🌟</span> Cơ Hội
+                        (Opportunities)</h3>
+                    <ul class="list-disc list-inside text-slate-700 space-y-2">
+                        <li>Nhiều doanh nghiệp Nhật đang chuyển đổi sang giao tiếp bằng tiếng Anh.</li>
+                        <li>Chính sách visa nới lỏng cho nhân sự chất lượng cao (HSP).</li>
+                        <li>Mức lương thưởng tăng mạnh để cạnh tranh nhân tài.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-rose-50 rounded-2xl p-6 border border-rose-100">
+                    <h3 class="text-xl font-bold text-rose-800 mb-4 flex items-center gap-2"><span>🔥</span> Thách Thức
+                        (Threats)</h3>
+                    <ul class="list-disc list-inside text-slate-700 space-y-2">
+                        <li>Cạnh tranh gay gắt từ kỹ sư Ấn Độ, Trung Quốc và Hàn Quốc.</li>
+                        <li>Sự sụt giá của đồng Yên (JPY) ảnh hưởng đến thu nhập thực tế.</li>
+                        <li>Áp lực công việc và yêu cầu khắt khe về chất lượng mã nguồn (Quality Control).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-slate-500 text-sm mt-12 pb-8 border-t border-slate-200 pt-8">
+            <p>Báo cáo giả định tạo bởi Canvas Infographics - Tháng 6/2026</p>
+            <p>Phân tích số liệu dựa trên xu hướng thị trường kỹ thuật số Nhật Bản</p>
+        </footer>
+
+    </main>
+
+    <script>
+        function wrapLabel(str) {
+            if (str.length <= 16) return str;
+            const words = str.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+            for (let i = 1; i < words.length; i++) {
+                if (currentLine.length + words[i].length + 1 <= 16) {
+                    currentLine += ' ' + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        const tooltipConfig = {
+            callbacks: {
+                title: function (tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['2020', '2022', '2024', '2026', '2028', '2030'].map(wrapLabel),
+                datasets: [{
+                    label: 'Mức độ thiếu hụt nhân sự IT (Ngành)',
+                    data: [300000, 380000, 450000, 540000, 650000, 790000],
+                    borderColor: '#E11D48',
+                    backgroundColor: 'rgba(225, 29, 72, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#E11D48',
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { font: { family: 'Inter', size: 13 } }
+                    },
+                    tooltip: tooltipConfig
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: {
+                            callback: function (value) {
+                                return value / 1000 + 'k';
+                            },
+                            font: { family: 'Inter' }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Inter' } }
+                    }
+                }
+            }
+        });
+
+        const langCtx = document.getElementById('languageChart').getContext('2d');
+        const langLabelsRaw = ['Python', 'Java', 'TypeScript & JS', 'Go (Golang)', 'C++ / C#', 'Ruby'];
+        new Chart(langCtx, {
+            type: 'bar',
+            data: {
+                labels: langLabelsRaw.map(wrapLabel),
+                datasets: [{
+                    label: 'Tỷ lệ yêu cầu trong tin tuyển dụng (%)',
+                    data: [28, 24, 20, 12, 10, 6],
+                    backgroundColor: [
+                        '#06B6D4',
+                        '#4F46E5',
+                        '#F59E0B',
+                        '#10B981',
+                        '#8B5CF6',
+                        '#E11D48'
+                    ],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: tooltipConfig
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { font: { family: 'Inter' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Inter', size: 11 } }
+                    }
+                }
+            }
+        });
+
+        const rolesCtx = document.getElementById('rolesChart').getContext('2d');
+        const rolesLabelsRaw = ['Kỹ sư Trí tuệ Nhân tạo & Dữ liệu', 'Lập trình viên Fullstack Web', 'Kỹ sư Điện toán Đám mây (Cloud)', 'Chuyên gia Bảo mật Không gian mạng', 'Lập trình viên Ứng dụng Di động'];
+        new Chart(rolesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: rolesLabelsRaw.map(wrapLabel),
+                datasets: [{
+                    data: [30, 25, 20, 15, 10],
+                    backgroundColor: [
+                        '#4F46E5',
+                        '#06B6D4',
+                        '#F59E0B',
+                        '#E11D48',
+                        '#10B981'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { font: { family: 'Inter', size: 12 }, padding: 20 }
+                    },
+                    tooltip: tooltipConfig
+                }
+            }
+        });
+
+        const indCtx = document.getElementById('industryChart').getContext('2d');
+        const indLabelsRaw = ['Fintech & Ngân hàng', 'Sản xuất & IoT (Automotive)', 'Thương mại điện tử & Web', 'Y tế & Healthtech', 'Giải trí & Video Game'];
+        new Chart(indCtx, {
+            type: 'radar',
+            data: {
+                labels: indLabelsRaw.map(wrapLabel),
+                datasets: [{
+                    label: 'Chỉ số nhu cầu tuyển dụng (1-100)',
+                    data: [90, 85, 80, 75, 70],
+                    backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                    borderColor: '#4F46E5',
+                    pointBackgroundColor: '#F59E0B',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#F59E0B',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(0,0,0,0.1)' },
+                        grid: { color: 'rgba(0,0,0,0.1)' },
+                        pointLabels: {
+                            font: { family: 'Inter', size: 12, weight: '600' },
+                            color: '#475569'
+                        },
+                        ticks: { display: false, min: 0, max: 100 }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: tooltipConfig
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
