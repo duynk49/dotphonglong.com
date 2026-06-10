@@ -1,311 +1,401 @@
 <!DOCTYPE html>
-<html lang="vi" data-bs-theme="dark">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đốt Phong Long Online - Xua tan xui xẻo</title>
-    <!-- Tải Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- Tải Font Inter từ Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <title>Đốt Phong Long - Xả Xui Rước Lộc</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Three.js & GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
     <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #f3f4f6;
+        }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #1a202c; /* Darker background for body */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+            transition: background-color 1s ease, color 1s ease;
         }
-        .custom-container {
-            max-width: 90%;
-            margin: 2rem auto;
-            padding: 2rem;
-            background-color: #2d3748; /* Slightly lighter dark background for container */
-            border-radius: 1rem;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); /* Stronger shadow */
-            text-align: center;
+        h1, h2, h3, .font-serif {
+            font-family: 'Playfair Display', serif;
         }
-        .fire-container {
-            position: relative;
-            width: 180px; /* Larger size for fire area */
-            height: 240px;
-            margin: 2rem auto;
-            display: none; /* Hidden by default */
-            overflow: hidden;
-            animation: burnEffect 2s forwards ease-out; /* Burning effect */
-            border-radius: 1rem; /* Rounded corners for fire area */
-            background-color: rgba(0, 0, 0, 0.3); /* Dark background for fire area */
-            box-shadow: 0 0 20px rgba(255, 165, 0, 0.5); /* Initial glow effect */
-        }
-        .flame {
-            position: absolute;
-            bottom: 0;
-            background: linear-gradient(to top, #ff7e5f, #feb47b, #ffda2f); /* Fire gradient colors */
-            border-radius: 50% 50% 0 0;
-            opacity: 0.8;
-            filter: blur(2px); /* Soften flame edges */
-            animation: flameUp 1s infinite alternate, flameFlicker 0.2s infinite; /* Flame movement and flicker effects */
-        }
-        .flame.flame1 { width: 60px; height: 100px; left: 60px; animation-delay: 0s; }
-        .flame.flame2 { width: 50px; height: 90px; left: 40px; animation-delay: 0.2s; }
-        .flame.flame3 { width: 70px; height: 110px; left: 80px; animation-delay: 0.1s; }
-        .flame.flame4 { width: 45px; height: 85px; left: 20px; animation-delay: 0.3s; } /* Fourth flame added */
-
-        @keyframes flameUp {
-            0% { transform: translateY(0) scaleX(1); opacity: 0.8; }
-            50% { transform: translateY(-15px) scaleX(1.05); opacity: 0.9; } /* More pronounced flame movement */
-            100% { transform: translateY(0) scaleX(1); opacity: 0.8; }
-        }
-        @keyframes flameFlicker { /* New flickering effect */
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 0.9; }
-        }
-        @keyframes burnEffect {
-            0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 165, 0, 0.5); }
-            50% { transform: scale(1.03); box-shadow: 0 0 20px rgba(255, 165, 0, 0.8); }
-            100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 165, 0, 0.5); }
-        }
-
-        .burning-text {
-            color: #ffcc00; /* Orange-yellow color for "Đang Đốt..." text */
-            text-shadow: 0 0 8px rgba(255, 204, 0, 0.7);
-            animation: textGlow 1.5s infinite alternate; /* Text glow effect */
-        }
-
-        @keyframes textGlow {
-            0%, 100% { text-shadow: 0 0 8px rgba(255, 204, 0, 0.7), 0 0 15px rgba(255, 204, 0, 0.3); }
-            50% { text-shadow: 0 0 15px rgba(255, 204, 0, 1), 0 0 25px rgba(255, 204, 0, 0.5); }
-        }
-
-        .success-message {
-            display: none; /* Hidden by default */
-            margin-top: 2rem;
-            color: #e0f2f7; /* Light blue for success message */
-        }
-        .fire-spark { /* Spark effect for burning */
-            position: absolute;
-            background-color: #ffcc00;
-            border-radius: 50%;
-            opacity: 0;
-            animation: sparkle 1s ease-out forwards;
-            pointer-events: none;
-        }
-
-        @keyframes sparkle {
-            0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
-            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
-        }
-
-        /* CSS for fireworks effect */
-        .fireworks-container {
-            position: fixed; /* Occupy entire screen */
+        #canvas-container {
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            display: none; /* Hidden by default */
-            z-index: 9999; /* Ensure it's on top of other elements */
-            pointer-events: none; /* Do not block interaction with elements below */
-            background-color: rgba(0, 0, 0, 0.5); /* Slightly dark background for fireworks */
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
         }
-
-        .firework-particle {
-            position: absolute;
-            background-color: var(--color); /* Random color */
-            border-radius: 50%;
-            opacity: 0;
-            animation: fireworkBurst var(--duration) ease-out forwards; /* Dynamic duration and easing */
-            box-shadow: 0 0 5px var(--color), 0 0 10px var(--color);
+        
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        @keyframes fireworkBurst {
-            0% {
-                transform: translate(0, 0) scale(0);
-                opacity: 1;
-            }
-            10% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--x), var(--y)) scale(0);
-                opacity: 0;
-            }
+        .light-mode .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+        
+        .light-mode {
+            --bg-color: #faf7f2;
+            --text-color: #1f2937;
         }
     </style>
 </head>
-<body class="bg-dark text-light d-flex align-items-center justify-content-center min-vh-100 p-3">
-    <div class="custom-container">
-        <h1 class="display-4 fw-bold text-warning mb-3">Đốt Phong Long Online 🕯️</h1>
-        <p class="lead text-light mb-5">Bạn đang cảm thấy xui xẻo, gặp chuyện không may? Hãy đốt phong long online để xua tan mọi vận đen và cầu mong bình an, may mắn đến với mình!</p>
+<body class="antialiased">
 
-        <!-- Nút Đốt Online (Chỉ hiển thị ban đầu) -->
-        <button id="burnButton" class="btn btn-danger btn-lg rounded-pill shadow-lg d-inline-flex align-items-center">
-            ĐỐT ONLINE <span class="ms-2">🔥</span>
-        </button>
+    <!-- 3D Background -->
+    <div id="canvas-container"></div>
 
-        <!-- Lottie Animation -->
-        <div id="fireEffect" class="fire-container">
-            <dotlottie-player id="lottiePlayer" src="https://lottie.host/8f8a9b96-1159-42bc-875d-47169ebd34d5/BlImfWrn2Y.lottie" background="transparent" speed="1" style="width: 100%; height: 100%;" loop></dotlottie-player>
-        </div>
-
-        <!-- Container cho hiệu ứng pháo bông -->
-        <div id="fireworksContainer" class="fireworks-container"></div>
-
-        <!-- Thông báo chúc mừng và phản hồi -->
-        <div id="successSection" class="success-message">
-            <h2 class="display-5 fw-bold text-success mb-3">Chúc Mừng! ✨</h2>
-            <p class="fs-5 mb-4">Phong long đã được đốt xong. Cầu mong mọi điều tốt lành, may mắn và bình an sẽ đến với bạn!</p>
-
-            <p class="fs-5 mb-3">Bạn cảm thấy thế nào? Hiệu quả chứ?</p>
-            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-                <button class="btn btn-outline-light btn-lg rounded-pill">Có, tôi thấy tốt hơn!</button>
-                <button class="btn btn-outline-secondary btn-lg rounded-pill">Chưa cảm nhận được...</button>
+    <main class="relative z-10 w-full">
+        
+        <!-- SECTION 1: HERO -->
+        <section class="h-screen flex flex-col items-center justify-center text-center px-4" id="hero">
+            <p class="text-sm tracking-[0.3em] uppercase text-red-500 mb-4 opacity-0" id="hero-subtitle">Nghi thức thanh tẩy</p>
+            <h1 class="text-5xl md:text-8xl font-bold tracking-tight mb-6 opacity-0" id="hero-title">Đốt Phong Long</h1>
+            <p class="text-lg md:text-xl max-w-lg mx-auto font-light text-gray-400 opacity-0" id="hero-desc">
+                Cuộn xuống để bắt đầu xả xui, rũ bỏ những năng lượng tiêu cực và đón nhận may mắn.
+            </p>
+            <div class="absolute bottom-10 animate-bounce opacity-50">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
             </div>
-            <!-- Nút ĐỐT LẠI (Luôn hiển thị sau lần đốt đầu tiên để bắt đầu lại) -->
-            <button id="burnAgainButton" class="btn btn-warning btn-lg rounded-pill shadow-lg mt-4 d-inline-flex align-items-center">
-                ĐỐT LẠI <span class="ms-2">🔁</span>
-            </button>
-        </div>
-    </div>
+        </section>
 
-    <!-- Lottie Player -->
-    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
-    
-    <!-- Tải Bootstrap 5 JS Bundle (bao gồm Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eJq0U1D+kQweT" crossorigin="anonymous"></script>
+        <!-- SECTION 2: THE BURN (SCROLL TRIGGER AREA) -->
+        <section class="h-[250vh] relative" id="burn-section">
+            <div class="sticky top-0 h-screen flex items-center justify-between px-8 md:px-24 pointer-events-none">
+                <div class="w-full md:w-1/3 text-left">
+                    <h2 class="text-3xl md:text-5xl font-serif mb-4 text-red-500">Lửa Thiêng</h2>
+                    <p class="text-lg opacity-80 leading-relaxed transition-opacity duration-500" id="burn-text-1">
+                        Ngọn lửa cháy rực cuốn đi những xui rủi, xú uế và những điều không may mắn đang đeo bám.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: THE CLEANSING (LIGHT MODE) -->
+        <section class="min-h-screen relative flex items-center justify-center py-24 px-4 transition-all duration-1000" id="cleanse-section">
+            <div class="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="glass-panel p-10 rounded-3xl">
+                    <h2 class="text-4xl md:text-5xl font-serif mb-6 text-amber-600">Khởi Đầu Mới</h2>
+                    <p class="text-lg mb-6 leading-relaxed">
+                        Không gian đã được thanh tẩy. Giờ đây, chỉ còn lại sự bình an, may mắn và năng lượng tích cực bao quanh bạn.
+                    </p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center"><span class="text-amber-500 mr-3">✦</span> Thu hút tài lộc</li>
+                        <li class="flex items-center"><span class="text-amber-500 mr-3">✦</span> Tinh thần thư thái</li>
+                        <li class="flex items-center"><span class="text-amber-500 mr-3">✦</span> Khai thông vận khí</li>
+                    </ul>
+                    <button class="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-full font-medium transition-colors w-full md:w-auto">
+                        Tìm Hiểu Vật Phẩm
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-panel rounded-2xl p-6 flex flex-col justify-center items-center text-center aspect-square">
+                        <div class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-4">
+                            <span class="text-2xl">🌿</span>
+                        </div>
+                        <h3 class="font-serif text-xl mb-2 font-bold">Trầm Hương</h3>
+                        <p class="text-sm opacity-70">Thanh lọc không khí</p>
+                    </div>
+                    <div class="glass-panel rounded-2xl p-6 flex flex-col justify-center items-center text-center aspect-square mt-8">
+                        <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                            <span class="text-2xl">🧂</span>
+                        </div>
+                        <h3 class="font-serif text-xl mb-2 font-bold">Muối Biển</h3>
+                        <p class="text-sm opacity-70">Hấp thụ xú uế</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="py-10 text-center relative z-10 glass-panel border-t-0 rounded-none">
+            <h2 class="font-serif text-2xl font-bold mb-2">dotphonglong.com</h2>
+            <p class="text-sm opacity-60">© 2026 Xả Xui Rước Lộc. All rights reserved.</p>
+        </footer>
+    </main>
+
     <script>
-        // Lấy các phần tử từ DOM
-        const burnButton = document.getElementById('burnButton');
-        const fireEffect = document.getElementById('fireEffect');
-        const successSection = document.getElementById('successSection');
-        const burnAgainButton = document.getElementById('burnAgainButton');
-        const fireworksContainer = document.getElementById('fireworksContainer');
+        // --- GSAP Plugin Registration ---
+        gsap.registerPlugin(ScrollTrigger);
 
-        // Function to create random fire sparks during burning
-        function createBurnSpark() {
-            const spark = document.createElement('div');
-            spark.classList.add('fire-spark');
-            const size = Math.random() * 5 + 3; // Random spark size from 3px to 8px
-            spark.style.width = `${size}px`;
-            spark.style.height = `${size}px`;
+        // --- Three.js Setup ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.z = 5;
 
-            const startX = Math.random() * fireEffect.offsetWidth;
-            const startY = fireEffect.offsetHeight; // Start from bottom of fire area
-            spark.style.left = `${startX}px`;
-            spark.style.bottom = `0px`; // Initial position at the bottom
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
 
-            // Random end position for the spark (flies up and spreads out)
-            const endX = (Math.random() - 0.5) * 100; // From -50px to 50px
-            const endY = -(Math.random() * 150 + 50); // From -50px to -200px (flies up)
-            spark.style.setProperty('--x', `${endX}px`);
-            spark.style.setProperty('--y', `${endY}px`);
+        // --- GLSL Shaders for Burning Paper ---
+        const vertexShader = `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `;
 
-            fireEffect.appendChild(spark);
+        const fragmentShader = `
+            uniform float uProgress;
+            varying vec2 vUv;
 
-            // Remove spark after animation ends
-            spark.addEventListener('animationend', () => {
-                spark.remove();
+            // 2D Random
+            float random (in vec2 st) {
+                return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+            }
+
+            // 2D Noise
+            float noise (in vec2 st) {
+                vec2 i = floor(st);
+                vec2 f = fract(st);
+                float a = random(i);
+                float b = random(i + vec2(1.0, 0.0));
+                float c = random(i + vec2(0.0, 1.0));
+                float d = random(i + vec2(1.0, 1.0));
+                vec2 u = f*f*(3.0-2.0*f);
+                return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+            }
+
+            // Fractal Brownian Motion
+            float fbm (in vec2 st) {
+                float value = 0.0;
+                float amplitude = .5;
+                float frequency = 0.;
+                for (int i = 0; i < 5; i++) {
+                    value += amplitude * noise(st);
+                    st *= 2.;
+                    amplitude *= .5;
+                }
+                return value;
+            }
+
+            void main() {
+                vec2 uv = vUv;
+                
+                // Paper Base Color (Dark Red)
+                vec3 paperColor = vec3(0.6, 0.05, 0.05);
+                
+                // Noise for burn pattern
+                float n = fbm(uv * 4.0);
+                
+                // Determine if pixel is burned based on progress (0.0 to 1.0)
+                // Offset progress slightly so it burns from bottom to top
+                float burnThreshold = uProgress * 1.5 - (1.0 - uv.y) * 0.5;
+                
+                if (n < burnThreshold) {
+                    discard; // Completely burned
+                }
+                
+                // Fire Edge calculation
+                float edgeWidth = 0.1;
+                float edge = smoothstep(burnThreshold, burnThreshold + edgeWidth, n);
+                
+                // Fire Colors
+                vec3 fireInner = vec3(1.0, 0.8, 0.1); // Yellow
+                vec3 fireOuter = vec3(1.0, 0.2, 0.0); // Orange/Red
+                vec3 ashColor = vec3(0.1, 0.1, 0.1);
+                
+                // Mix fire colors
+                vec3 fireColor = mix(fireOuter, fireInner, (n - burnThreshold) / edgeWidth);
+                
+                // Final mix between paper and fire edge
+                vec3 finalColor = mix(fireColor, paperColor, smoothstep(0.0, 1.0, (n - burnThreshold) / edgeWidth * 2.0));
+                
+                // Add a bit of ash transition
+                if(edge < 0.2) {
+                    finalColor = mix(ashColor, finalColor, edge * 5.0);
+                }
+
+                gl_FragColor = vec4(finalColor, 1.0);
+            }
+        `;
+
+        // Create the Paper Mesh
+        const geometry = new THREE.PlaneGeometry(2, 3, 32, 32);
+        const material = new THREE.ShaderMaterial({
+            vertexShader,
+            fragmentShader,
+            uniforms: {
+                uProgress: { value: 0.0 }
+            },
+            transparent: true,
+            side: THREE.DoubleSide
+        });
+        const paper = new THREE.Mesh(geometry, material);
+        // Position it to the right on desktop, center on mobile
+        paper.position.x = window.innerWidth > 768 ? 1.5 : 0;
+        scene.add(paper);
+
+        // --- Particles (Embers/Sparks) ---
+        const particleCount = 200;
+        const particleGeometry = new THREE.BufferGeometry();
+        const particlePositions = new Float32Array(particleCount * 3);
+        const particleVelocities = [];
+
+        for(let i=0; i<particleCount; i++) {
+            particlePositions[i*3] = (Math.random() - 0.5) * 4;
+            particlePositions[i*3+1] = (Math.random() - 0.5) * 4 - 2; // Start lower
+            particlePositions[i*3+2] = (Math.random() - 0.5) * 2;
+            particleVelocities.push({
+                x: (Math.random() - 0.5) * 0.02,
+                y: Math.random() * 0.03 + 0.01,
+                z: (Math.random() - 0.5) * 0.02
             });
         }
 
-        // Function to create firework burst effect
-        function createFireworkBurst(count = 30, x, y) {
-            const colors = ['#FFC300', '#FF5733', '#C70039', '#900C3F', '#581845', '#33FF57', '#33B5FF', '#A033FF']; // More colors added
-            for (let i = 0; i < count; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('firework-particle');
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+        const particleMaterial = new THREE.PointsMaterial({
+            color: 0xff5500,
+            size: 0.05,
+            transparent: true,
+            opacity: 0.0, // Hidden initially
+            blending: THREE.AdditiveBlending
+        });
+        const particles = new THREE.Points(particleGeometry, particleMaterial);
+        scene.add(particles);
 
-                const size = Math.random() * 8 + 2; // Firework particle size from 2px to 10px
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
+        // --- Mouse Interaction ---
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
 
-                particle.style.left = `${x}px`;
-                particle.style.top = `${y}px`;
-
-                // Random angle and distance for particles to fly
-                const angle = Math.random() * Math.PI * 2; // From 0 to 360 degrees
-                const distance = Math.random() * 150 + 50; // Flight distance from 50px to 200px
-                const endX = Math.cos(angle) * distance;
-                const endY = Math.sin(angle) * distance;
-
-                const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.setProperty('--x', `${endX}px`);
-                particle.style.setProperty('--y', `${endY}px`);
-                particle.style.setProperty('--color', randomColor);
-                particle.style.setProperty('--duration', `${Math.random() * 1.5 + 1.5}s`); // Animation duration from 1.5s to 3s
-
-                fireworksContainer.appendChild(particle);
-
-                particle.addEventListener('animationend', () => {
-                    particle.remove();
-                });
-            }
-        }
-
-        // Function to start the burning process (reusable for both initial and re-burn)
-        function startBurning() {
-            burnButton.style.display = 'none'; // Hide the initial burn button
-            successSection.style.display = 'none'; // Hide success section if visible
-            fireworksContainer.style.display = 'none'; // Ensure fireworks are hidden initially
-            fireEffect.style.display = 'block'; // Show the fire effect
-
-            // Start generating fire sparks
-            let sparkInterval = setInterval(createBurnSpark, 100);
-
-            // Random burn duration between 5 and 10 seconds
-            const randomBurnDuration = Math.random() * (10000 - 5000) + 5000;
-            console.log(`Thời gian đốt: ${randomBurnDuration / 1000} giây`);
-
-            setTimeout(() => {
-                clearInterval(sparkInterval); // Stop generating fire sparks
-                fireEffect.style.display = 'none'; // Hide fire effect
-
-                fireworksContainer.style.display = 'block'; // Show fireworks container
-
-                // Create multiple firework bursts randomly
-                let fireworkCount = 0;
-                const maxFireworks = 5; // Number of firework bursts
-                const fireworkInterval = setInterval(() => {
-                    if (fireworkCount >= maxFireworks) {
-                        clearInterval(fireworkInterval);
-                        return;
-                    }
-                    // Random position for fireworks on screen
-                    const fireworkX = Math.random() * window.innerWidth;
-                    const fireworkY = Math.random() * window.innerHeight * 0.7; // Limit to upper part of the screen
-                    createFireworkBurst(30, fireworkX, fireworkY); // 30 particles per burst
-                    fireworkCount++;
-                }, 500); // Each firework burst appears every 0.5 seconds
-
-                // After fireworks finish, display success message
-                setTimeout(() => {
-                    fireworksContainer.style.display = 'none';
-                    successSection.style.display = 'block'; // Show success message
-                }, 3000); // Duration for fireworks display (e.g., 3 seconds)
-
-            }, randomBurnDuration); // Use the random burning duration
-        }
-
-        // Get Lottie player instance
-        const lottiePlayer = document.querySelector('dotlottie-player');
-
-        // Play Lottie animation when fire effect is shown
-        function playLottieAnimation() {
-            if (lottiePlayer) {
-                lottiePlayer.play();
-            }
-        }
-
-        // Event listener for initial burn button
-        burnButton.addEventListener('click', () => {
-            startBurning();
-            playLottieAnimation();
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - windowHalfX);
+            mouseY = (event.clientY - windowHalfY);
         });
 
-        // Event listener for "ĐỐT LẠI" button - directly triggers the burn process and plays animation
-        burnAgainButton.addEventListener('click', () => {
-            // No need to show burnButton again; startBurning handles hiding it.
-            startBurning();
+        // --- Animation Loop ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Smooth mouse follow for paper rotation
+            targetX = mouseX * 0.001;
+            targetY = mouseY * 0.001;
+            
+            paper.rotation.y += 0.05 * (targetX - paper.rotation.y);
+            paper.rotation.x += 0.05 * (targetY - paper.rotation.x);
+
+            // Animate particles (fly up like embers)
+            const positions = particles.geometry.attributes.position.array;
+            for(let i=0; i<particleCount; i++) {
+                positions[i*3] += particleVelocities[i].x;
+                positions[i*3+1] += particleVelocities[i].y;
+                positions[i*3+2] += particleVelocities[i].z;
+
+                // Reset particle if it goes too high
+                if(positions[i*3+1] > 3) {
+                    positions[i*3+1] = -2;
+                    positions[i*3] = (Math.random() - 0.5) * 4;
+                }
+            }
+            particles.geometry.attributes.position.needsUpdate = true;
+
+            // Gentle float effect on paper
+            paper.position.y = Math.sin(clock.getElapsedTime()) * 0.1;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // --- GSAP Animations ---
+        
+        // Initial load animation
+        window.addEventListener('load', () => {
+            gsap.to("#hero-subtitle", { opacity: 1, y: -20, duration: 1, ease: "power3.out" });
+            gsap.to("#hero-title", { opacity: 1, y: -20, duration: 1, delay: 0.2, ease: "power3.out" });
+            gsap.to("#hero-desc", { opacity: 1, y: -20, duration: 1, delay: 0.4, ease: "power3.out" });
         });
+
+        // Burn Scroll Trigger
+        gsap.to(material.uniforms.uProgress, {
+            value: 1.0, // Burn completely
+            scrollTrigger: {
+                trigger: "#burn-section",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.5
+            }
+        });
+
+        // Particle Opacity Scroll Trigger (appear while burning, fade out at end)
+        gsap.to(particleMaterial, {
+            opacity: 0.8,
+            scrollTrigger: {
+                trigger: "#burn-section",
+                start: "top top",
+                end: "center center",
+                scrub: true
+            }
+        });
+        gsap.to(particleMaterial, {
+            opacity: 0,
+            scrollTrigger: {
+                trigger: "#burn-section",
+                start: "center center",
+                end: "bottom bottom",
+                scrub: true
+            }
+        });
+
+        // Paper exit animation (move up and scale down after burned)
+        gsap.to(paper.position, {
+            y: 3,
+            scrollTrigger: {
+                trigger: "#cleanse-section",
+                start: "top bottom",
+                end: "top top",
+                scrub: true
+            }
+        });
+
+        // Toggle Light Mode
+        ScrollTrigger.create({
+            trigger: "#cleanse-section",
+            start: "top center",
+            onEnter: () => document.body.classList.add("light-mode"),
+            onLeaveBack: () => document.body.classList.remove("light-mode")
+        });
+
+        // --- Handle Resize ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Adjust paper position based on screen size
+            paper.position.x = window.innerWidth > 768 ? 1.5 : 0;
+        });
+
     </script>
 </body>
 </html>
