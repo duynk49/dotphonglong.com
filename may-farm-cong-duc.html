@@ -342,21 +342,22 @@
                 </div>
             </div>
 
-            <div class="space-y-4 mb-8">
+            <div class="space-y-4 mb-8" id="payment-form-container">
                 <div>
                     <label class="block text-sm text-slate-400 mb-1">Số thẻ tín dụng / Ghi nợ</label>
-                    <input type="text" placeholder="xxxx xxxx xxxx xxxx" class="w-full bg-cyber-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-karma-500 font-mono">
+                    <input type="text" id="cc-number" placeholder="0000 0000 0000 0000" maxlength="19" class="w-full bg-cyber-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-karma-500 font-mono transition-colors">
                 </div>
                 <div class="flex gap-4">
                     <div class="flex-1">
                         <label class="block text-sm text-slate-400 mb-1">Ngày hết hạn</label>
-                        <input type="text" placeholder="MM/YY" class="w-full bg-cyber-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-karma-500 font-mono">
+                        <input type="text" id="cc-exp" placeholder="MM/YY" maxlength="5" class="w-full bg-cyber-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-karma-500 font-mono transition-colors">
                     </div>
                     <div class="flex-1">
                         <label class="block text-sm text-slate-400 mb-1">CVV</label>
-                        <input type="text" placeholder="xxx" class="w-full bg-cyber-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-karma-500 font-mono">
+                        <input type="text" id="cc-cvv" placeholder="123" maxlength="3" class="w-full bg-cyber-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-karma-500 font-mono transition-colors">
                     </div>
                 </div>
+                <p id="form-error-msg" class="text-red-500 text-sm font-bold text-center hidden animate-pulse pt-2">Tâm chưa tịnh, vui lòng nhập đúng và đủ thông tin thẻ!</p>
             </div>
 
             <div class="relative h-14">
@@ -407,13 +408,17 @@
 
 
         // --- GAME STATE ---
-        let karmaPoints = 0;
+        let karmaPoints = parseInt(localStorage.getItem('karmaPoints')) || 0;
         let isAutoFarming = false;
         let autoFarmInterval = null;
 
         // --- DOM ELEMENTS ---
         const mokugyoBtn = document.getElementById('mokugyo-btn');
         const counterEl = document.getElementById('global-karma-counter');
+        
+        // Hiển thị điểm công đức đã lưu ngay khi load trang
+        counterEl.innerText = karmaPoints.toLocaleString();
+
         const startOverlay = document.getElementById('start-overlay');
         const startAppBtn = document.getElementById('start-app-btn');
         const autoFarmBtn = document.getElementById('auto-farm-btn');
@@ -425,6 +430,68 @@
         const trollPayBtn = document.getElementById('troll-pay-btn');
         const funModal = document.getElementById('fun-modal');
         const closeFunModalBtn = document.getElementById('close-fun-modal-btn');
+
+        // Form elements
+        const ccNumber = document.getElementById('cc-number');
+        const ccExp = document.getElementById('cc-exp');
+        const ccCvv = document.getElementById('cc-cvv');
+        const formErrorMsg = document.getElementById('form-error-msg');
+        const paymentFormContainer = document.getElementById('payment-form-container');
+
+        // --- VALIDATION LOGIC ---
+        // Tự động format số thẻ
+        ccNumber.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); 
+            value = value.replace(/(.{4})/g, '$1 ').trim(); 
+            e.target.value = value;
+            checkValidityVisuals();
+        });
+
+        // Tự động format MM/YY
+        ccExp.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+            checkValidityVisuals();
+        });
+
+        // Chỉ cho nhập số vào CVV
+        ccCvv.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+            checkValidityVisuals();
+        });
+
+        // Kiểm tra form đã hợp lệ chưa
+        function isFormValid() {
+            const numValid = ccNumber.value.replace(/\s/g, '').length === 16;
+            
+            let expValid = false;
+            if (ccExp.value.length === 5) {
+                const month = parseInt(ccExp.value.substring(0,2));
+                if (month >= 1 && month <= 12) expValid = true;
+            }
+            
+            const cvvValid = ccCvv.value.length === 3;
+            
+            return numValid && expValid && cvvValid;
+        }
+
+        // Ẩn thông báo lỗi nếu đang gõ dở mà hợp lệ
+        function checkValidityVisuals() {
+            if(isFormValid()) {
+                formErrorMsg.classList.add('hidden');
+            }
+        }
+
+        // Reset form khi mở modal
+        function resetPaymentForm() {
+            ccNumber.value = '';
+            ccExp.value = '';
+            ccCvv.value = '';
+            formErrorMsg.classList.add('hidden');
+        }
 
         // --- INITIALIZATION ---
         startAppBtn.addEventListener('click', () => {
@@ -442,6 +509,9 @@
             // 1. Tăng điểm
             karmaPoints++;
             counterEl.innerText = karmaPoints.toLocaleString();
+
+            // Lưu công đức vào Local Storage
+            localStorage.setItem('karmaPoints', karmaPoints);
 
             // 2. Play Sound
             playGocSound();
@@ -529,6 +599,7 @@
         
         // Mở modal
         upgradeBtn.addEventListener('click', () => {
+            resetPaymentForm(); // Reset trắng form mỗi lần mở
             paymentModal.classList.remove('hidden');
             // Đợi một chút để browser render element (bỏ display: none) rồi mới áp dụng opacity
             setTimeout(() => {
@@ -539,6 +610,8 @@
             trollPayBtn.style.position = 'absolute';
             trollPayBtn.style.left = '0px';
             trollPayBtn.style.top = '0px';
+            trollPayBtn.classList.remove('animate-spin-away');
+            isButtonDead = false;
         });
 
         // Đóng modal
@@ -556,7 +629,10 @@
         trollPayBtn.addEventListener('mouseenter', function() {
             if (isButtonDead) return;
 
-            // Lấy kích thước của container chứa nút (class="relative h-14" bên trên)
+            // NẾU FORM CHƯA HỢP LỆ: Đứng im cho người ta bấm để hiện lỗi chửi
+            if (!isFormValid()) return;
+
+            // NẾU FORM ĐÃ HỢP LỆ: Bắt đầu quá trình chạy trốn
             const container = this.parentElement;
             const containerRect = container.getBoundingClientRect();
             const btnRect = this.getBoundingClientRect();
@@ -580,6 +656,17 @@
         // Đề phòng trường hợp click được trên mobile hoặc dùng phím tab
         trollPayBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            
+            // TROLL 1: Bấm khi chưa điền đủ form -> Hiện lỗi uy tín
+            if (!isFormValid()) {
+                formErrorMsg.classList.remove('hidden');
+                // Lắc form một cái cho sinh động
+                paymentFormContainer.classList.add('animate-pop');
+                setTimeout(() => paymentFormContainer.classList.remove('animate-pop'), 200);
+                return;
+            }
+
+            // TROLL 2: Điền đủ form và may mắn bấm trúng nút đang bay
             if (isButtonDead) return;
             isButtonDead = true;
 
