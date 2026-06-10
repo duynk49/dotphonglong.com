@@ -34,6 +34,7 @@
                         'pop': 'pop 0.1s ease-in-out',
                         'spin-slow': 'spin 10s linear infinite',
                         'pulse-glow': 'pulseGlow 2s infinite',
+                        'spin-away': 'spinAway 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards',
                     },
                     keyframes: {
                         floatUp: {
@@ -48,6 +49,10 @@
                         pulseGlow: {
                             '0%, 100%': { boxShadow: '0 0 15px 5px rgba(245, 158, 11, 0.3)' },
                             '50%': { boxShadow: '0 0 25px 10px rgba(245, 158, 11, 0.6)' }
+                        },
+                        spinAway: {
+                            '0%': { transform: 'scale(1) rotate(0deg)', opacity: 1 },
+                            '100%': { transform: 'scale(0) rotate(1080deg)', opacity: 0 }
                         }
                     }
                 }
@@ -307,11 +312,72 @@
                         <li class="flex items-center gap-3"><i class="fa-solid fa-check text-karma-500"></i> Đổi giao diện mõ Vàng 9999</li>
                         <li class="flex items-center gap-3"><i class="fa-solid fa-check text-karma-500"></i> Tích xanh "Tu Tập" cạnh tên</li>
                     </ul>
-                    <button class="w-full py-3 rounded-xl bg-karma-500 hover:bg-karma-400 text-cyber-900 transition-colors font-extrabold" onclick="alert('Bảo thanh toán thật thì lại rén =))) Cứ xài bản Free đi nha!')">Nâng Cấp Ngay</button>
+                    <button id="upgrade-btn" class="w-full py-3 rounded-xl bg-karma-500 hover:bg-karma-400 text-cyber-900 transition-colors font-extrabold">Nâng Cấp Ngay</button>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Modal Thanh Toán (Troll) -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] opacity-0 pointer-events-none transition-opacity duration-300 hidden">
+        <div class="glass-panel w-full max-w-md p-8 rounded-3xl relative mx-4">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+            
+            <h3 class="text-2xl font-bold mb-6 text-center">Thanh Toán Tâm Linh</h3>
+            
+            <div class="bg-cyber-800 rounded-xl p-4 mb-6 border border-slate-700">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-slate-400">Gói dịch vụ:</span>
+                    <span class="font-bold text-karma-400">Gói Đắc Đạo</span>
+                </div>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-slate-400">Chu kỳ:</span>
+                    <span>1 Tháng</span>
+                </div>
+                <div class="border-t border-slate-700 my-2 pt-2 flex justify-between items-center">
+                    <span class="font-bold">Tổng tiền:</span>
+                    <span class="text-2xl font-extrabold text-white">99,000đ</span>
+                </div>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Số thẻ tín dụng / Ghi nợ</label>
+                    <input type="text" placeholder="xxxx xxxx xxxx xxxx" class="w-full bg-cyber-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-karma-500 font-mono">
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm text-slate-400 mb-1">Ngày hết hạn</label>
+                        <input type="text" placeholder="MM/YY" class="w-full bg-cyber-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-karma-500 font-mono">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm text-slate-400 mb-1">CVV</label>
+                        <input type="text" placeholder="xxx" class="w-full bg-cyber-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-karma-500 font-mono">
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative h-14">
+                <button id="troll-pay-btn" class="absolute left-0 top-0 w-full bg-green-600 hover:bg-green-500 text-white font-extrabold py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-lock"></i> Xác Nhận Thanh Toán
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thông Báo Vui Vẻ -->
+    <div id="fun-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[110] opacity-0 pointer-events-none transition-opacity duration-300 hidden">
+        <div class="glass-panel w-full max-w-sm p-8 rounded-3xl relative mx-4 text-center border-2 border-karma-500 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
+            <div class="text-6xl mb-4 animate-bounce">🤣</div>
+            <h3 class="text-2xl font-bold mb-4 text-karma-400">Giác Ngộ Rồi!</h3>
+            <p class="text-slate-300 mb-6">Nút thanh toán đã thăng thiên. Ở đây chúng tôi làm vì đam mê, vui vẻ thôi chứ không có mua bán gì đâu nhé! 🙏</p>
+            <button id="close-fun-modal-btn" class="w-full bg-karma-500 hover:bg-karma-400 text-cyber-900 font-extrabold py-3 px-6 rounded-xl transition-all">
+                Đóng & Tiếp Tục Tu Tập
+            </button>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="py-8 border-t border-slate-800 text-center text-slate-500">
@@ -353,6 +419,12 @@
         const autoFarmBtn = document.getElementById('auto-farm-btn');
         const autoFarmText = document.getElementById('auto-farm-text');
         const soundToggle = document.getElementById('sound-toggle');
+        const upgradeBtn = document.getElementById('upgrade-btn');
+        const paymentModal = document.getElementById('payment-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const trollPayBtn = document.getElementById('troll-pay-btn');
+        const funModal = document.getElementById('fun-modal');
+        const closeFunModalBtn = document.getElementById('close-fun-modal-btn');
 
         // --- INITIALIZATION ---
         startAppBtn.addEventListener('click', () => {
@@ -451,6 +523,94 @@
                 
                 clearInterval(autoFarmInterval);
             }
+        });
+
+        // --- TROLL PAYMENT MODAL LOGIC ---
+        
+        // Mở modal
+        upgradeBtn.addEventListener('click', () => {
+            paymentModal.classList.remove('hidden');
+            // Đợi một chút để browser render element (bỏ display: none) rồi mới áp dụng opacity
+            setTimeout(() => {
+                paymentModal.classList.remove('opacity-0', 'pointer-events-none');
+            }, 10);
+            
+            // Reset vị trí nút về mặc định
+            trollPayBtn.style.position = 'absolute';
+            trollPayBtn.style.left = '0px';
+            trollPayBtn.style.top = '0px';
+        });
+
+        // Đóng modal
+        closeModalBtn.addEventListener('click', () => {
+            paymentModal.classList.add('opacity-0', 'pointer-events-none');
+            // Đợi animation fade out xong mới ẩn hẳn
+            setTimeout(() => {
+                paymentModal.classList.add('hidden');
+            }, 300);
+        });
+
+        // Logic nút chạy trốn
+        let isButtonDead = false;
+
+        trollPayBtn.addEventListener('mouseenter', function() {
+            if (isButtonDead) return;
+
+            // Lấy kích thước của container chứa nút (class="relative h-14" bên trên)
+            const container = this.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = this.getBoundingClientRect();
+
+            // Tính toán khoảng không gian có thể nhảy trong phạm vi modal
+            // Để đơn giản, ta cho nó nhảy trong một vùng rộng hơn container một chút
+            // Modal đang set max-w-md (~448px), padding 8 (~32px mỗi bên) -> content width ~ 384px
+            
+            const maxX = 300 - btnRect.width; // Giới hạn chiều ngang
+            const maxY = 200; // Cho phép nhảy lên trên/xuống dưới trong khoảng 200px
+            const minY = -200;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            let randomY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+
+            this.style.position = 'absolute';
+            this.style.left = `${randomX}px`;
+            this.style.top = `${randomY}px`;
+        });
+
+        // Đề phòng trường hợp click được trên mobile hoặc dùng phím tab
+        trollPayBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (isButtonDead) return;
+            isButtonDead = true;
+
+            // Thêm animation quay vòng vòng và biến mất
+            trollPayBtn.classList.add('animate-spin-away');
+
+            // Đợi animation chạy xong (1 giây) rồi mới hiện modal troll
+            setTimeout(() => {
+                // Tự động đóng modal thanh toán cũ
+                closeModalBtn.click();
+
+                // Mở modal vui vẻ
+                funModal.classList.remove('hidden');
+                setTimeout(() => {
+                    funModal.classList.remove('opacity-0', 'pointer-events-none');
+                }, 10);
+                
+                // Reset lại trạng thái của nút để lần sau mở lên còn troll tiếp
+                trollPayBtn.classList.remove('animate-spin-away');
+                trollPayBtn.style.left = '0px';
+                trollPayBtn.style.top = '0px';
+                isButtonDead = false;
+            }, 1000);
+        });
+
+        // Đóng modal vui vẻ
+        closeFunModalBtn.addEventListener('click', () => {
+            funModal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                funModal.classList.add('hidden');
+            }, 300);
         });
 
     </script>
