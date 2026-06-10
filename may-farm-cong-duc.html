@@ -360,7 +360,7 @@
                 <p id="form-error-msg" class="text-red-500 text-sm font-bold text-center hidden animate-pulse pt-2">Tâm chưa tịnh, vui lòng nhập đúng và đủ thông tin thẻ!</p>
             </div>
 
-            <div class="relative h-14">
+            <div class="relative h-14 z-50">
                 <button id="troll-pay-btn" class="absolute left-0 top-0 w-full bg-green-600 hover:bg-green-500 text-white font-extrabold py-3 px-4 rounded-xl transition-all duration-200 flex justify-center items-center gap-2">
                     <i class="fa-solid fa-lock"></i> Xác Nhận Thanh Toán
                 </button>
@@ -626,7 +626,7 @@
         // Logic nút chạy trốn
         let isButtonDead = false;
 
-        trollPayBtn.addEventListener('mouseenter', function() {
+        trollPayBtn.addEventListener('mouseenter', function(e) {
             if (isButtonDead) return;
 
             // NẾU FORM CHƯA HỢP LỆ: Đứng im cho người ta bấm để hiện lỗi chửi
@@ -634,19 +634,48 @@
 
             // NẾU FORM ĐÃ HỢP LỆ: Bắt đầu quá trình chạy trốn
             const container = this.parentElement;
+            const modal = this.closest('.glass-panel');
+            
             const containerRect = container.getBoundingClientRect();
+            const modalRect = modal.getBoundingClientRect();
             const btnRect = this.getBoundingClientRect();
 
-            // Tính toán khoảng không gian có thể nhảy trong phạm vi modal
-            // Để đơn giản, ta cho nó nhảy trong một vùng rộng hơn container một chút
-            // Modal đang set max-w-md (~448px), padding 8 (~32px mỗi bên) -> content width ~ 384px
+            // Giới hạn không gian nhảy nằm ngay bên trong modal, cách viền 20px
+            const padding = 20; 
             
-            const maxX = 300 - btnRect.width; // Giới hạn chiều ngang
-            const maxY = 200; // Cho phép nhảy lên trên/xuống dưới trong khoảng 200px
-            const minY = -200;
+            // Toạ độ giới hạn (tính theo hệ quy chiếu của container đang chứa nút)
+            const minX = (modalRect.left - containerRect.left) + padding;
+            const maxX = (modalRect.right - containerRect.left) - btnRect.width - padding;
+            
+            const minY = (modalRect.top - containerRect.top) + padding;
+            const maxY = (modalRect.bottom - containerRect.top) - btnRect.height - padding;
 
-            const randomX = Math.floor(Math.random() * maxX);
-            let randomY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+            // Toạ độ con trỏ chuột hiện tại
+            const mouseX = e.clientX - containerRect.left;
+            const mouseY = e.clientY - containerRect.top;
+
+            // Nút phải nhảy tránh xa chuột ít nhất khoảng này (pixels)
+            const safeDistance = 120; 
+
+            let randomX, randomY;
+            let distance = 0;
+            let attempts = 0;
+
+            // Dùng vòng lặp tìm một toạ độ ngẫu nhiên thoả mãn điều kiện cách xa chuột
+            do {
+                randomX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+                randomY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+
+                // Tính khoảng cách bằng Pytago
+                const newBtnCenterX = randomX + (btnRect.width / 2);
+                const newBtnCenterY = randomY + (btnRect.height / 2);
+                
+                const dx = newBtnCenterX - mouseX;
+                const dy = newBtnCenterY - mouseY;
+                distance = Math.sqrt(dx * dx + dy * dy);
+                
+                attempts++;
+            } while (distance < safeDistance && attempts < 50); // Giới hạn 50 lần thử để chống treo máy
 
             this.style.position = 'absolute';
             this.style.left = `${randomX}px`;
