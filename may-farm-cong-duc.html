@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 
     <script>
         tailwind.config = {
@@ -321,37 +320,22 @@
     </footer>
 
     <script>
-        // --- TONE.JS SETUP ---
-        let synth;
+        // --- AUDIO SETUP ---
         let isAudioInitialized = false;
+        let isSoundOn = true;
 
         function initAudio() {
             if (isAudioInitialized) return;
-            
-            // Khởi tạo một màng rung (MembraneSynth) giả lập âm thanh gõ gỗ cứng
-            synth = new Tone.MembraneSynth({
-                pitchDecay: 0.01,
-                octaves: 0.1,
-                oscillator: { type: "square" },
-                envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.1 }
-            }).toDestination();
-
-            // Thêm Filter để âm thanh trầm và giống gõ gỗ hơn (cắt bớt treble)
-            const filter = new Tone.Filter(800, "lowpass").toDestination();
-            synth.connect(filter);
-            // Giảm âm lượng một chút
-            synth.volume.value = -5; 
-
             isAudioInitialized = true;
-            Tone.start();
             console.log("Audio Engine Started");
         }
 
         function playGocSound() {
             if (!isAudioInitialized || !isSoundOn) return;
-            // Gõ nốt C5, thời lượng rất ngắn
             try {
-                synth.triggerAttackRelease("C5", "32n");
+                // Sử dụng Audio object và tạo mới mỗi lần gõ để âm thanh có thể đè lên nhau khi click nhanh
+                const audio = new Audio('http://dotphonglong.com/go-mo.mp3');
+                audio.play().catch(e => console.log("Lỗi phát âm thanh:", e));
             } catch(e) {}
         }
 
@@ -360,7 +344,6 @@
         let karmaPoints = 0;
         let isAutoFarming = false;
         let autoFarmInterval = null;
-        let isSoundOn = true;
 
         // --- DOM ELEMENTS ---
         const mokugyoBtn = document.getElementById('mokugyo-btn');
