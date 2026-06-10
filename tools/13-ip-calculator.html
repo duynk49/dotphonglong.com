@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công Cụ Chia IP (Subnet Calculator)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#10b981',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .binary-bit { display: inline-block; width: 14px; text-align: center; }
+        .bit-net { color: #3b82f6; font-weight: bold; }
+        .bit-host { color: #9ca3af; }
+        .dark .bit-host { color: #6b7280; }
+        
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200 min-h-screen">
+
+    <div class="max-w-4xl mx-auto p-4 md:p-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="network" class="w-8 h-8 text-primary"></i>
+                Subnet Calculator
+            </h1>
+            <button id="themeToggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition">
+                <i data-lucide="moon" id="themeIcon"></i>
+            </button>
+        </div>
+
+        <!-- Input Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-6 border border-gray-100 dark:border-gray-700">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium mb-2">Địa chỉ IPv4</label>
+                    <input type="text" id="ipInput" value="192.168.1.0" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="VD: 192.168.1.10">
+                    <p id="ipError" class="text-red-500 text-sm mt-1 hidden">IP không hợp lệ</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">CIDR (Subnet Mask)</label>
+                    <div class="flex items-center">
+                        <span class="px-3 py-3 bg-gray-100 dark:bg-gray-700 border border-r-0 border-gray-300 dark:border-gray-600 rounded-l-lg text-gray-500">/</span>
+                        <input type="number" id="cidrInput" value="24" min="0" max="32" class="w-full px-4 py-3 rounded-r-lg border border-gray-300 dark:border-gray-600 bg-transparent focus:ring-2 focus:ring-primary outline-none transition" placeholder="24">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div class="bg-gray-50 dark:bg-gray-900/50 px-6 py-4 border-b border-gray-100 dark:border-gray-700 font-semibold">Thông số cơ bản</div>
+                <div class="p-0">
+                    <table class="w-full text-left border-collapse">
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group">
+                                <td class="px-6 py-3 text-sm text-gray-500 dark:text-gray-400">Địa chỉ Mạng (Network)</td>
+                                <td class="px-6 py-3 font-mono font-medium" id="resNetwork">-</td>
+                                <td class="px-4 py-3 w-10 text-right"><button class="copy-btn opacity-0 group-hover:opacity-100 transition" data-target="resNetwork"><i data-lucide="copy" class="w-4 h-4 text-gray-400 hover:text-primary"></i></button></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group">
+                                <td class="px-6 py-3 text-sm text-gray-500 dark:text-gray-400">Subnet Mask</td>
+                                <td class="px-6 py-3 font-mono font-medium" id="resMask">-</td>
+                                <td class="px-4 py-3 text-right"><button class="copy-btn opacity-0 group-hover:opacity-100 transition" data-target="resMask"><i data-lucide="copy" class="w-4 h-4 text-gray-400 hover:text-primary"></i></button></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group">
+                                <td class="px-6 py-3 text-sm text-gray-500 dark:text-gray-400">Host Đầu Tiên</td>
+                                <td class="px-6 py-3 font-mono text-secondary font-medium" id="resFirst">-</td>
+                                <td class="px-4 py-3 text-right"><button class="copy-btn opacity-0 group-hover:opacity-100 transition" data-target="resFirst"><i data-lucide="copy" class="w-4 h-4 text-gray-400 hover:text-primary"></i></button></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group">
+                                <td class="px-6 py-3 text-sm text-gray-500 dark:text-gray-400">Host Cuối Cùng</td>
+                                <td class="px-6 py-3 font-mono text-secondary font-medium" id="resLast">-</td>
+                                <td class="px-4 py-3 text-right"><button class="copy-btn opacity-0 group-hover:opacity-100 transition" data-target="resLast"><i data-lucide="copy" class="w-4 h-4 text-gray-400 hover:text-primary"></i></button></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group">
+                                <td class="px-6 py-3 text-sm text-gray-500 dark:text-gray-400">Địa chỉ Broadcast</td>
+                                <td class="px-6 py-3 font-mono font-medium" id="resBroadcast">-</td>
+                                <td class="px-4 py-3 text-right"><button class="copy-btn opacity-0 group-hover:opacity-100 transition" data-target="resBroadcast"><i data-lucide="copy" class="w-4 h-4 text-gray-400 hover:text-primary"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <!-- Stat Cards -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col justify-center items-center text-center">
+                        <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Tổng Host Khả Dụng</span>
+                        <span class="text-3xl font-bold text-primary" id="resTotalHosts">0</span>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col justify-center items-center text-center">
+                        <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Loại Mạng (Class)</span>
+                        <span class="text-3xl font-bold" id="resClass">-</span>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex-1 flex flex-col justify-center items-center text-center">
+                    <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Phân loại</span>
+                    <span class="text-xl font-semibold px-4 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" id="resType">Private</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Binary View Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 overflow-x-auto">
+            <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-4">Phân tích nhị phân (Network: <span class="text-primary">Xanh</span>, Host: Xám)</h3>
+            
+            <div class="space-y-4 min-w-[600px]">
+                <div class="flex items-center">
+                    <div class="w-24 text-sm font-medium">IP:</div>
+                    <div class="font-mono text-lg tracking-widest" id="binIp"></div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-24 text-sm font-medium">Mask:</div>
+                    <div class="font-mono text-lg tracking-widest" id="binMask"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded shadow-lg transform transition-transform duration-300 translate-y-20 opacity-0 flex items-center gap-2">
+        <i data-lucide="check-circle" class="w-4 h-4 text-secondary"></i>
+        <span>Đã sao chép!</span>
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        function updateThemeIcon(isDark) {
+            themeIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            lucide.createIcons();
+        }
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            updateThemeIcon(true);
+        } else {
+            updateThemeIcon(false);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.theme = isDark ? 'dark' : 'light';
+            updateThemeIcon(isDark);
+        });
+
+        // Subnet Calculator Logic
+        const ipInput = document.getElementById('ipInput');
+        const cidrInput = document.getElementById('cidrInput');
+        const ipError = document.getElementById('ipError');
+
+        function ip2int(ip) {
+            return ip.split('.').reduce((int, oct) => (int << 8) + parseInt(oct, 10), 0) >>> 0;
+        }
+
+        function int2ip(int) {
+            return [
+                (int >>> 24) & 255,
+                (int >>> 16) & 255,
+                (int >>> 8) & 255,
+                int & 255
+            ].join('.');
+        }
+
+        function int2bin(int, cidr) {
+            let binStr = (int >>> 0).toString(2).padStart(32, '0');
+            let html = '';
+            for (let i = 0; i < 32; i++) {
+                if (i > 0 && i % 8 === 0) html += '<span class="mx-1 text-gray-400">.</span>';
+                let cls = i < cidr ? 'bit-net' : 'bit-host';
+                html += `<span class="binary-bit ${cls}">${binStr[i]}</span>`;
+            }
+            return html;
+        }
+
+        function getClass(ipInt) {
+            let firstOctet = (ipInt >>> 24) & 255;
+            if (firstOctet >= 1 && firstOctet <= 126) return 'A';
+            if (firstOctet >= 128 && firstOctet <= 191) return 'B';
+            if (firstOctet >= 192 && firstOctet <= 223) return 'C';
+            if (firstOctet >= 224 && firstOctet <= 239) return 'D (Multicast)';
+            if (firstOctet >= 240 && firstOctet <= 255) return 'E (Experimental)';
+            return 'Không xác định';
+        }
+
+        function getType(ipInt) {
+            let o1 = (ipInt >>> 24) & 255;
+            let o2 = (ipInt >>> 16) & 255;
+            
+            if (o1 === 10) return 'Private';
+            if (o1 === 172 && o2 >= 16 && o2 <= 31) return 'Private';
+            if (o1 === 192 && o2 === 168) return 'Private';
+            if (o1 === 127) return 'Loopback';
+            if (o1 === 169 && o2 === 254) return 'APIPA / Link-Local';
+            
+            return 'Public';
+        }
+
+        function calculate() {
+            const ipStr = ipInput.value.trim();
+            const cidr = parseInt(cidrInput.value, 10);
+
+            // Validate IP
+            const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            
+            if (!ipRegex.test(ipStr)) {
+                ipError.classList.remove('hidden');
+                return;
+            }
+            ipError.classList.add('hidden');
+
+            if (isNaN(cidr) || cidr < 0 || cidr > 32) return;
+
+            const ipInt = ip2int(ipStr);
+            const maskInt = cidr === 0 ? 0 : (~((1 << (32 - cidr)) - 1)) >>> 0;
+            
+            const networkInt = (ipInt & maskInt) >>> 0;
+            const broadcastInt = (networkInt | ~maskInt) >>> 0;
+            
+            let firstInt = networkInt + 1;
+            let lastInt = broadcastInt - 1;
+            let totalHosts = 0;
+
+            if (cidr === 32) {
+                firstInt = networkInt;
+                lastInt = networkInt;
+                totalHosts = 1;
+            } else if (cidr === 31) {
+                firstInt = networkInt;
+                lastInt = broadcastInt;
+                totalHosts = 2;
+            } else {
+                totalHosts = Math.pow(2, 32 - cidr) - 2;
+                if (totalHosts < 0) totalHosts = 0;
+            }
+
+            // Update UI Data
+            document.getElementById('resNetwork').textContent = int2ip(networkInt);
+            document.getElementById('resMask').textContent = int2ip(maskInt);
+            document.getElementById('resFirst').textContent = totalHosts > 0 || cidr >= 31 ? int2ip(firstInt) : 'N/A';
+            document.getElementById('resLast').textContent = totalHosts > 0 || cidr >= 31 ? int2ip(lastInt) : 'N/A';
+            document.getElementById('resBroadcast').textContent = cidr === 32 ? 'N/A' : int2ip(broadcastInt);
+            document.getElementById('resTotalHosts').textContent = totalHosts.toLocaleString();
+            document.getElementById('resClass').textContent = getClass(ipInt);
+            
+            const typeStr = getType(ipInt);
+            const resType = document.getElementById('resType');
+            resType.textContent = typeStr;
+            
+            // Type Badge Colors
+            resType.className = 'text-lg font-semibold px-4 py-1 rounded-full';
+            if(typeStr === 'Private') resType.classList.add('bg-secondary/20', 'text-secondary');
+            else if(typeStr === 'Public') resType.classList.add('bg-primary/20', 'text-primary');
+            else resType.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+
+            // Binary UI
+            document.getElementById('binIp').innerHTML = int2bin(ipInt, cidr);
+            document.getElementById('binMask').innerHTML = int2bin(maskInt, cidr);
+        }
+
+        // Event Listeners
+        ipInput.addEventListener('input', calculate);
+        cidrInput.addEventListener('input', calculate);
+
+        // Copy functionality
+        const toast = document.getElementById('toast');
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetId = btn.getAttribute('data-target');
+                const textToCopy = document.getElementById(targetId).textContent;
+                
+                // Fallback cho iFrame
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    
+                    // Show toast
+                    toast.classList.remove('translate-y-20', 'opacity-0');
+                    setTimeout(() => {
+                        toast.classList.add('translate-y-20', 'opacity-0');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Không thể copy', err);
+                }
+                document.body.removeChild(textArea);
+            });
+        });
+
+        // Initial Calc
+        calculate();
+    </script>
+</body>
+</html>
